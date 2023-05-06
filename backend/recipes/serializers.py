@@ -6,7 +6,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
 from users.models import Follow
-from .models import Ingredient, IngredientRecipe, Recipe, ShoppingCart, Tag
+from .models import Ingredient, IngredientRecipe, Recipe, ShoppingCart, Tag, Favorite
 
 User = get_user_model()
 
@@ -205,3 +205,45 @@ class FollowRecipeSerializer(serializers.ModelSerializer):
             "image",
             "cooking_time",
         )
+
+
+class FavoriteSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Favorite
+        fields = ('user', 'recipe',)
+
+    def validate(self, data):
+        user = data['user']
+        if user.favorites_user.filter(recipe=data['recipe']).exists():
+            raise serializers.ValidationError(
+                'Рецепт уже добавлен в избранное.'
+            )
+        return data
+
+    def to_representation(self, instance):
+        return FollowRecipeSerializer(
+            instance.recipe,
+            context={'request': self.context.get('request')}
+        ).data
+
+
+class ShoppingCartSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ShoppingCart
+        fields = ('user', 'recipe',)
+
+    def validate(self, data):
+        user = data['user']
+        if user.carts.filter(recipe=data['recipe']).exists():
+            raise serializers.ValidationError(
+                'Рецепт уже добавлен в корзину'
+            )
+        return data
+
+    def to_representation(self, instance):
+        return FollowRecipeSerializer(
+            instance.recipe,
+            context={'request': self.context.get('request')}
+        ).data
