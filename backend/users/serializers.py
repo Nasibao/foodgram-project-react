@@ -15,7 +15,7 @@ class UserSerializer(serializers.ModelSerializer):
     is_subscribed = serializers.SerializerMethodField()
 
     def get_is_subscribed(self, obj):
-        return obj.id in self.context['follows']
+        return obj.id in self.context["follows"]
 
     class Meta:
         fields = (
@@ -47,15 +47,17 @@ class FollowSerializer(serializers.ModelSerializer):
     is_subscribed = serializers.SerializerMethodField()
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.IntegerField(
-        source='recipes.count', read_only=True
+        source="recipes.count", read_only=True
     )
 
     def validate(self, data):
         author = self.instance
-        user = self.context.get('request').user
+        user = self.context.get("request").user
         if author == user:
             raise ValidationError(
-                {"errors": "Вы не можете подписываться/отписывать на/от самого себя"}
+                {
+                    "errors": "Вы не можете подписываться/отписывать на/от самого себя"
+                }
             )
         if Follow.objects.filter(user=user, author=author).exists():
             raise ValidationError(
@@ -69,7 +71,7 @@ class FollowSerializer(serializers.ModelSerializer):
         author = get_object_or_404(User, id=obj.pk)
         recipes = author.recipes.all()
         if limit:
-            recipes = recipes[:int(limit)]
+            recipes = recipes[: int(limit)]
         serializer = FollowRecipeSerializer(
             recipes,
             many=True,
@@ -80,7 +82,7 @@ class FollowSerializer(serializers.ModelSerializer):
         return serializer.data
 
     def get_is_subscribed(self, obj):
-        return obj.id in self.context['follows']
+        return obj.id in self.context["follows"]
 
     class Meta:
         model = User
@@ -94,4 +96,4 @@ class FollowSerializer(serializers.ModelSerializer):
             "recipes",
             "recipes_count",
         )
-        read_only_fields = ('email', 'username', 'first_name', 'last_name')
+        read_only_fields = ("email", "username", "first_name", "last_name")

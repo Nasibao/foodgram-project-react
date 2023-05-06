@@ -10,32 +10,53 @@ class CustomUserAdmin(UserAdmin):
     form = UserChangeForm
     model = User
     list_display = (
-        'email', 'is_staff', 'is_active',
+        "email",
+        "is_staff",
+        "is_active",
     )
-    list_filter = (
-        'is_staff', 'is_active'
-    )
+    list_filter = ("is_staff", "is_active")
     fieldsets = (
-        (None, {
-            'fields': (
-                'username', 'first_name', 'last_name', 'email', 'password',
-            )
-        }),
-        ('Права', {
-            'fields': (
-                'is_staff', 'is_active',
-            )
-        }),
+        (
+            None,
+            {
+                "fields": (
+                    "username",
+                    "first_name",
+                    "last_name",
+                    "email",
+                    "password",
+                )
+            },
+        ),
+        (
+            "Права",
+            {
+                "fields": (
+                    "is_staff",
+                    "is_active",
+                )
+            },
+        ),
     )
     add_fieldsets = (
-        (None, {
-            'classes': ('wide',),
-            'fields': (
-                'username', 'first_name', 'last_name', 'email', 'password1',
-                'password2', 'is_staff', 'is_active')}
-         ),
+        (
+            None,
+            {
+                "classes": ("wide",),
+                "fields": (
+                    "username",
+                    "first_name",
+                    "last_name",
+                    "email",
+                    "password1",
+                    "password2",
+                    "is_staff",
+                    "is_active",
+                ),
+            },
+        ),
     )
-    search_fields = ('email', 'first_name', 'last_name')
+    search_fields = ("email", "first_name", "last_name")
 
 
 admin.site.register(User, CustomUserAdmin)

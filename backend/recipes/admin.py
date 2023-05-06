@@ -1,8 +1,14 @@
 from django.contrib import admin
 from django.shortcuts import get_object_or_404
 
-from recipes.models import (Favorite, Ingredient, IngredientRecipe, Recipe,
-                            ShoppingCart, Tag)
+from recipes.models import (
+    Favorite,
+    Ingredient,
+    IngredientRecipe,
+    Recipe,
+    ShoppingCart,
+    Tag,
+)
 from users.models import User
 
 
@@ -14,7 +20,10 @@ class IngredientAdmin(admin.ModelAdmin):
 
 class TagAdmin(admin.ModelAdmin):
     list_display = ("name", "slug", "color")
-    search_fields = ("name", "slug",)
+    search_fields = (
+        "name",
+        "slug",
+    )
 
 
 class RecipeIngredientInline(admin.TabularInline):
@@ -24,7 +33,13 @@ class RecipeIngredientInline(admin.TabularInline):
 
 class RecipeAdmin(admin.ModelAdmin):
     inlines = (RecipeIngredientInline,)
-    list_display = ("id", "name", "author", "email", "favourite_count",)
+    list_display = (
+        "id",
+        "name",
+        "author",
+        "email",
+        "favourite_count",
+    )
     search_fields = (
         "name",
         "author__username",
@@ -51,7 +66,10 @@ class IngredientRecipeAdmin(admin.ModelAdmin):
         "ingredient",
         "amount",
     )
-    search_fields = ("ingredient__name", "recipe__name", )
+    search_fields = (
+        "ingredient__name",
+        "recipe__name",
+    )
 
 
 class ShoppingCartAdmin(admin.ModelAdmin):

@@ -7,10 +7,10 @@ User = get_user_model()
 class CreationForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = User
-        fields = ('email', 'username')
+        fields = ("email", "username")
 
 
 class ChangeForm(UserChangeForm):
     class Meta(UserChangeForm.Meta):
         model = User
-        fields = ('email', 'username')
+        fields = ("email", "username")

@@ -9,16 +9,16 @@ class IsOwnerOrReadOnly(BasePermission):
 class IsAuthenticatedAndOwner(BasePermission):
     def has_permission(self, request, view):
         return bool(
-            request.method in SAFE_METHODS or
-            request.user and
-            request.user.is_authenticated
+            request.method in SAFE_METHODS
+            or request.user
+            and request.user.is_authenticated
         )
 
     def has_object_permission(self, request, view, obj):
         if (
-                request.method == 'DELETE'
-                or request.method == 'PATCH'
-                or request.method == 'PUT'
-            ):
+            request.method == "DELETE"
+            or request.method == "PATCH"
+            or request.method == "PUT"
+        ):
             return obj.author == request.user
         return True
