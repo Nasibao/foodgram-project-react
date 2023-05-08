@@ -29,7 +29,7 @@ class UserViewSet(DjoserUserViewSet):
             "follows": set(
                 Follow.objects.filter(user_id=self.request.user).values_list(
                     "author_id", flat=True
-                )
+                ) if self.request.user.is_authenticated else set()
             ),
         }
 

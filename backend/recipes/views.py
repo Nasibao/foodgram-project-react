@@ -20,6 +20,7 @@ from .models import (
     ShoppingCart,
     Tag,
 )
+from users.models import Follow
 from .permissions import IsAuthenticatedAndOwner
 from .serializers import (
     FollowRecipeSerializer,
@@ -51,33 +52,30 @@ class RecipeViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticatedAndOwner,)
     filter_class = RecipeFilter
 
+    def get_serializer_context(self):
+        return {
+            "request": self.request,
+            "format": self.format_kwarg,
+            "view": self,
+            "follows": set(
+                Follow.objects.filter(user_id=self.request.user).values_list(
+                    "author_id", flat=True
+                ) if self.request.user.is_authenticated else set()
+            ),
+            "favorites": set(
+                Favorite.objects.filter(user_id=self.request.user).values_list(
+                    "recipe_id", flat=True
+                ) if self.request.user.is_authenticated else set()
+            ),
+            "carts": set(
+                ShoppingCart.objects.filter(user_id=self.request.user).values_list(
+                    "recipe_id", flat=True
+                ) if self.request.user.is_authenticated else set()
+            ),
+        }
+
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
-
-    @staticmethod
-    def favorite_shopping(request, pk, work_model, errors):
-        if request.method == "POST":
-            if work_model.objects.filter(
-                user=request.user, recipe__id=pk
-            ).exists():
-                return Response(
-                    {"errors": errors["recipe_in"]},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-            recipe = get_object_or_404(Recipe, id=pk)
-            work_model.objects.create(user=request.user, recipe=recipe)
-            serializer = FollowRecipeSerializer(
-                recipe, context={"request": request}
-            )
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        recipe = work_model.objects.filter(user=request.user, recipe__id=pk)
-        if recipe.exists():
-            recipe.detele()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(
-            {"errors": errors["recipe_not_in"]},
-            status=status.HTTP_400_BAD_REQUEST,
-        )
 
     @action(
         methods=["post", "delete"],
